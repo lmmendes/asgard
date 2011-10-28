@@ -78,6 +78,9 @@
           self.x = x;
           self.y = y;
         };
+
+        self.getX = function(){ return self.x;  }
+        self.getY = function(){ return self.y;  }
         
         self.draw = function(){
           try{
@@ -95,7 +98,6 @@
           }
           self.interval++;
         };
-     
         
       };
       
@@ -116,6 +118,35 @@
       }
       
       gameLoop();
+
+      window.addEventListener("keydown", move, false);
+
+      var moveDelta = 6;
+
+      function move ( e ) {
+          //console.log(e.keyCode);
+
+          var up = 38;
+          var down = 40;
+          var left = 37;
+          var right = 39;
+
+          if (e.keyCode == up) 
+              player.setPosition( player.getX() , player.getY() - moveDelta );
+
+          if (e.keyCode == down) 
+              player.setPosition( player.getX() , player.getY + moveDelta );
+
+          if (e.keyCode == left) 
+              player.setPosition( player.getX() - moveDelta, player.getY() );
+
+          if (e.keyCode == right) 
+              player.setPosition( player.getX() + moveDelta, player.getY() );
+
+          console.log(player.getX(), player.getY());
+      }
+
+
     });
       
     </script>
