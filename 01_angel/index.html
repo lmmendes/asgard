@@ -1,0 +1,127 @@
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>index</title>
+    <script type="text/javascript" charset="utf-8" src="js/jquery.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+    
+    $(document).ready(function(){
+      
+      // define the world
+     
+      var width  = 320;
+      var height = 480;
+      var c = document.getElementById('canvas');
+      var ctx = c.getContext('2d');
+      var gLoop;
+      
+      var clean = function(){
+        ctx.fillStyle = '#d0e7f9';
+        ctx.beginPath();
+        ctx.rect(0,0,width,height);
+        ctx.closePath();
+        ctx.fill();
+      }
+      
+      var howManyCircles = 10;
+      var circles = [];
+      for(var i=0;i<howManyCircles;i++){
+        //[ x, y, radius, transparency (0.0-1.0) ]
+        circles.push([ Math.random()*width, Math.random()*height/4, Math.random()*100, Math.random()/2 ]);
+      }
+      
+      var drawCircles = function(){
+        for(var i=0;i<howManyCircles;i++){
+          ctx.fillStyle = 'rgba(255,255,255,' + circles[i][3] + ')';
+          ctx.beginPath();
+          //arc(x, y, radius, startAngle, endAngle, anticlockwise)  
+          ctx.arc(circles[i][0], circles[i][1], circles[i][2], 0, Math.PI*2, true);
+          ctx.closePath();
+          ctx.fill();
+        }
+      }
+      
+      var moveCircles = function(deltaY){
+        for(var i=0;i<howManyCircles;i++){
+          if( circles[i][1]+circles[i][2] > height ){
+            circles[i][0] = Math.random()*width;
+            circles[i][1] = Math.random()*height/4;            
+            circles[i][2] = Math.random()*100;
+            circles[i][3] = Math.random()/2;                        
+          }else{
+            circles[i][1]+=deltaY;
+          }
+        }
+      }
+      
+      // ==== define the player 
+      
+      var Player = function(){
+        var self   = this;
+        
+        self.totalFrames = 1;
+        self.currentFrame  = 0;
+        self.interval = 0;
+        
+        
+        self.image = new Image();
+        self.asset = 'angel.png';
+        self.image.src = self.asset;
+        
+        self.width = 65;
+        self.height = 95;
+        
+        self.x=0;
+        self.y=0;
+        
+        self.setPosition = function(x,y){
+          self.x = x;
+          self.y = y;
+        };
+        
+        self.draw = function(){
+          try{
+            ctx.drawImage(self.image, 0,self.height*self.currentFrame, self.width, self.height, self.x, self.y, self.width, self.height);
+          }catch(e){ console && console.log(e); }
+          
+          if( self.interval == 4 ){
+
+            if( self.currentFrame == self.totalFrames ){
+              self.currentFrame = 0;
+            }else{
+              self.currentFrame++;
+            }
+            self.interval = 0;
+          }
+          self.interval++;
+        };
+     
+        
+      };
+      
+      
+      // create player and insert him in the canvas
+      
+      var player = new Player();
+      player.setPosition(~~((width-player.width)/2),  ~~((height - player.height)/2));
+      
+      // ==== game loop
+      
+      var gameLoop = function(){
+        clean();
+        moveCircles(5);
+        drawCircles();
+        player.draw();
+        gLoop = setTimeout(gameLoop, 1000/30);
+      }
+      
+      gameLoop();
+    });
+      
+    </script>
+    
+  </head>
+  <body>
+    <canvas id="canvas" width="320px" height="480px"></canvas>
+  </body>
+</html>
